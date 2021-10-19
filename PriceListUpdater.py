@@ -29,14 +29,13 @@ try:
             for i in range(len(price_list_df)):
                 item_name = str(price_list_df.iloc[i,2])
                 price_list = [
-                {'PriceList': 1, 'Price': float(price_list_df.iloc[i,5])},
+                {'PriceList': 1, 'Price': float(price_list_df.iloc[i,4])},
                 {"PriceList": 2, "Price": float(price_list_df.iloc[i,5])},
                 {"PriceList": 3, "Price": float(price_list_df.iloc[i,6])},
                 {"PriceList": 4, "Price": float(price_list_df.iloc[i,7])}
                 ]
                 item_prices = s_json.dumps({'ItemPrices': price_list}, ignore_nan=True)
                 response = s.patch(f"{baseAddress}/b1s/v2/Items('{item_name}')", data = item_prices, verify = False)
-
 
 except FileNotFoundError:
     print("Не удалось найти файл credentials.")
