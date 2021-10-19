@@ -4,23 +4,45 @@ import requests
 import os
 import pandas as pd
 
-# wb_obj = openpyxl.load_workbook("demo.xlsx")
-# sheet_obj = wb_obj.active
-#
-# #Getting the max number of rows
-# max_rows = len(sheet_obj['A'])
+try:
+    #reading a credentials file to get credentials
+    with open(f"{os.path.dirname(os.path.realpath(__file__))}/credentials") as json_file:
+        data = json.load(json_file)
+        address = data['address']
+        port = data['port']
+        db = data['CompanyDB']
+        user = data['Username']
+        pas = data['Password']
+        baseAddress = f"{address}:{port}"
+        credentials = {"CompanyDB": db, "Password": pas, "UserName": user}
 
-price_list_df = pd.read_excel("demo.xlsx")
-#print(price_list_df)
+    with requests.Session() as s:
+        print("Подключение к SAP...")
+        response = s.post(f"{baseAddress}/b1s/v2/Login", json = credentials, verify = False)
+        if(response.status_code == 200):
 
-#iterating over a dataframe
-for i in range(len(price_list_df)):
-    item_name = price_list_df.iloc[i,0]
-    price_list = [
-    {"PriceList": 1, "Price": price_list_df.iloc[i,1]},
-    {"PriceList": 2, "Price": price_list_df.iloc[i,2]},
-    {"PriceList": 3, "Price": price_list_df.iloc[i,3]},
-    {"PriceList": 4, "Price": price_list_df.iloc[i,4]}
-    ]
-    item_prices = {"ItemPrices": price_list}
-    print(item_prices)
+            #loading data from excel file into a dataframe
+            price_list_df = pd.read_excel("demo.xlsx")
+
+            #iterating over a dataframe
+            for i in range(len(price_list_df)):
+                item_name = price_list_df.iloc[i,0]
+                price_list = [
+                {"PriceList": 1, "Price": float(price_list_df.iloc[i,1])},
+                {"PriceList": 2, "Price": float(price_list_df.iloc[i,2])},
+                {"PriceList": 3, "Price": float(price_list_df.iloc[i,3])},
+                {"PriceList": 4, "Price": float(price_list_df.iloc[i,4])}
+                ]
+                item_prices = {"ItemPrices": price_list}
+                print(json.dumps(item_prices))
+
+
+except FileNotFoundError:
+    print("Не удалось найти файл credentials.")
+except requests.exceptions.ConnectionError:
+    print("Не удалось подключиться к серверу. Сервер не отвечает.")
+except Exception as e:
+    print(str(e))
+    print("Неизвестная ошибка.")
+finally:
+    os.system("exit")
