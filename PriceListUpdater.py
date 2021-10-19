@@ -23,22 +23,19 @@ try:
         if(response.status_code == 200):
 
             #loading data from excel file into a dataframe
-            price_list_df = pd.read_excel("demo.xlsx")
+            price_list_df = pd.read_excel("Narxlar.xlsx", sheet_name=1, header = None)
 
             #iterating over a dataframe
             for i in range(len(price_list_df)):
-                item_name = str(price_list_df.iloc[i,0])
+                item_name = str(price_list_df.iloc[i,2])
                 price_list = [
-                {'PriceList': 1, 'Price': float(price_list_df.iloc[i,1])},
-                {"PriceList": 2, "Price": float(price_list_df.iloc[i,2])},
-                {"PriceList": 3, "Price": float(price_list_df.iloc[i,3])},
-                {"PriceList": 4, "Price": float(price_list_df.iloc[i,4])}
+                {'PriceList': 1, 'Price': float(price_list_df.iloc[i,5])},
+                {"PriceList": 2, "Price": float(price_list_df.iloc[i,5])},
+                {"PriceList": 3, "Price": float(price_list_df.iloc[i,6])},
+                {"PriceList": 4, "Price": float(price_list_df.iloc[i,7])}
                 ]
                 item_prices = s_json.dumps({'ItemPrices': price_list}, ignore_nan=True)
-                #print(item_prices)
                 response = s.patch(f"{baseAddress}/b1s/v2/Items('{item_name}')", data = item_prices, verify = False)
-                print(response.content)
-                # print(f"'{item_name}' is updated!!!")
 
 
 except FileNotFoundError:
