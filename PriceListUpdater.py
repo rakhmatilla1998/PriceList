@@ -36,6 +36,7 @@ try:
                 ]
                 item_prices = s_json.dumps({'ItemPrices': price_list}, ignore_nan=True)
                 response = s.patch(f"{baseAddress}/b1s/v2/Items('{item_name}')", data = item_prices, verify = False)
+                print(response.status_code)
 
 except FileNotFoundError:
     print("Не удалось найти файл credentials.")
